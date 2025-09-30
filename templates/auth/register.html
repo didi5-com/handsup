@@ -1,0 +1,162 @@
+
+{% extends "base.html" %}
+
+{% block title %}Sign Up - Hands Up{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8 col-lg-6">
+        <div class="card shadow-lg border-0 rounded-custom">
+            <div class="card-body p-5">
+                <div class="text-center mb-4">
+                    <i class="fas fa-hands-helping fa-3x text-primary mb-3"></i>
+                    <h2 class="fw-bold">Join Hands Up</h2>
+                    <p class="text-muted">Create your account and start making a difference</p>
+                </div>
+
+                <form method="POST" class="needs-validation" novalidate>
+                    {{ form.hidden_tag() }}
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-4">
+                            {{ form.full_name.label(class="form-label") }}
+                            {{ form.full_name(class="form-control form-control-lg", placeholder="Enter your full name") }}
+                            {% if form.full_name.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {% for error in form.full_name.errors %}
+                                        {{ error }}
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+
+                        <div class="col-md-6 mb-4">
+                            {{ form.phone.label(class="form-label") }}
+                            {{ form.phone(class="form-control form-control-lg", placeholder="Enter your phone number") }}
+                            {% if form.phone.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {% for error in form.phone.errors %}
+                                        {{ error }}
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <div class="mb-4">
+                        {{ form.email.label(class="form-label") }}
+                        {{ form.email(class="form-control form-control-lg", placeholder="Enter your email address") }}
+                        {% if form.email.errors %}
+                            <div class="invalid-feedback d-block">
+                                {% for error in form.email.errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-4">
+                            {{ form.password.label(class="form-label") }}
+                            <div class="input-group">
+                                {{ form.password(class="form-control form-control-lg", placeholder="Create a password", id="password") }}
+                                <button class="btn btn-outline-secondary" type="button" id="togglePassword">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                            </div>
+                            {% if form.password.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {% for error in form.password.errors %}
+                                        {{ error }}
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                            <div class="form-text">
+                                <small>Password must be at least 6 characters long</small>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6 mb-4">
+                            {{ form.confirm_password.label(class="form-label") }}
+                            {{ form.confirm_password(class="form-control form-control-lg", placeholder="Confirm your password") }}
+                            {% if form.confirm_password.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {% for error in form.confirm_password.errors %}
+                                        {{ error }}
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <div class="mb-4">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="agreeTerms" required>
+                            <label class="form-check-label" for="agreeTerms">
+                                I agree to the <a href="{{ url_for('privacy') }}" class="text-decoration-none">Terms of Service</a> 
+                                and <a href="{{ url_for('privacy') }}" class="text-decoration-none">Privacy Policy</a>
+                            </label>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary btn-lg w-100 mb-3">
+                        <i class="fas fa-user-plus me-2"></i>Create Account
+                    </button>
+
+                    <div class="text-center">
+                        <p class="text-muted mb-0">
+                            By signing up, you agree to help create positive change in the world
+                        </p>
+                    </div>
+                </form>
+
+                <hr class="my-4">
+
+                <div class="text-center">
+                    <p class="text-muted mb-3">Already have an account?</p>
+                    <a href="{{ url_for('login') }}" class="btn btn-outline-primary w-100">
+                        <i class="fas fa-sign-in-alt me-2"></i>Sign In
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.getElementById('togglePassword').addEventListener('click', function() {
+    const password = document.getElementById('password');
+    const icon = this.querySelector('i');
+    
+    if (password.type === 'password') {
+        password.type = 'text';
+        icon.classList.remove('fa-eye');
+        icon.classList.add('fa-eye-slash');
+    } else {
+        password.type = 'password';
+        icon.classList.remove('fa-eye-slash');
+        icon.classList.add('fa-eye');
+    }
+});
+
+// Password strength indicator
+document.getElementById('password').addEventListener('input', function() {
+    const password = this.value;
+    const strengthIndicator = document.getElementById('password-strength');
+    
+    let strength = 0;
+    if (password.length >= 6) strength++;
+    if (password.match(/[a-z]/) && password.match(/[A-Z]/)) strength++;
+    if (password.match(/\d/)) strength++;
+    if (password.match(/[^a-zA-Z\d]/)) strength++;
+    
+    const strengthLevels = ['Very Weak', 'Weak', 'Fair', 'Good', 'Strong'];
+    const strengthColors = ['danger', 'warning', 'info', 'success', 'success'];
+    
+    if (strengthIndicator) {
+        strengthIndicator.textContent = strengthLevels[strength];
+        strengthIndicator.className = `text-${strengthColors[strength]}`;
+    }
+});
+</script>
+{% endblock %}

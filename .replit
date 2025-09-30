@@ -17,3 +17,15 @@ externalPort = 80
 
 [agent]
 expertMode = true
+
+[workflows]
+runButton = "Start Application"
+
+[[workflows.workflow]]
+name = "Start Application"
+author = 48132489
+mode = "sequential"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "python main.py"

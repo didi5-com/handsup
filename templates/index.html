@@ -1,0 +1,181 @@
+
+{% extends "base.html" %}
+
+{% block main_class %}{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="hero-section bg-primary text-white py-5">
+    <div class="container">
+        <div class="row align-items-center min-vh-75">
+            <div class="col-lg-6">
+                <h1 class="display-4 fw-bold mb-4">Together We Can Make a Difference</h1>
+                <p class="lead mb-4">Join our community of changemakers. Support meaningful campaigns and help create positive impact around the world.</p>
+                <div class="d-flex gap-3">
+                    <a href="{{ url_for('campaigns') }}" class="btn btn-light btn-lg">
+                        <i class="fas fa-search me-2"></i>Browse Campaigns
+                    </a>
+                    <a href="{{ url_for('register') }}" class="btn btn-outline-light btn-lg">
+                        <i class="fas fa-plus me-2"></i>Get Started
+                    </a>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <img src="https://images.unsplash.com/photo-1559027615-cd4628902d4a?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" 
+                     alt="People helping" class="img-fluid rounded shadow">
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Stats Section -->
+<section class="py-5 bg-light">
+    <div class="container">
+        <div class="row text-center">
+            <div class="col-md-3 mb-4">
+                <div class="card border-0 bg-transparent">
+                    <div class="card-body">
+                        <i class="fas fa-users fa-3x text-primary mb-3"></i>
+                        <h3 class="fw-bold">10,000+</h3>
+                        <p class="text-muted">Active Supporters</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 mb-4">
+                <div class="card border-0 bg-transparent">
+                    <div class="card-body">
+                        <i class="fas fa-heart fa-3x text-danger mb-3"></i>
+                        <h3 class="fw-bold">500+</h3>
+                        <p class="text-muted">Campaigns Funded</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 mb-4">
+                <div class="card border-0 bg-transparent">
+                    <div class="card-body">
+                        <i class="fas fa-dollar-sign fa-3x text-success mb-3"></i>
+                        <h3 class="fw-bold">$2M+</h3>
+                        <p class="text-muted">Funds Raised</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 mb-4">
+                <div class="card border-0 bg-transparent">
+                    <div class="card-body">
+                        <i class="fas fa-globe fa-3x text-info mb-3"></i>
+                        <h3 class="fw-bold">50+</h3>
+                        <p class="text-muted">Countries Reached</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Featured Campaigns -->
+<section class="py-5">
+    <div class="container">
+        <div class="row mb-5">
+            <div class="col-lg-8 mx-auto text-center">
+                <h2 class="display-5 fw-bold mb-3">Featured Campaigns</h2>
+                <p class="lead text-muted">Discover amazing projects that are making a real difference</p>
+            </div>
+        </div>
+        
+        <div class="row">
+            {% for campaign in campaigns %}
+            <div class="col-lg-4 col-md-6 mb-4">
+                <div class="card h-100 shadow-sm border-0">
+                    {% if campaign.image_url %}
+                    <img src="{{ campaign.image_url }}" class="card-img-top" alt="{{ campaign.title }}" style="height: 200px; object-fit: cover;">
+                    {% endif %}
+                    <div class="card-body d-flex flex-column">
+                        <h5 class="card-title">{{ campaign.title }}</h5>
+                        <p class="card-text flex-grow-1">{{ campaign.description[:100] }}...</p>
+                        
+                        <!-- Progress Bar -->
+                        <div class="mb-3">
+                            <div class="d-flex justify-content-between mb-1">
+                                <small class="text-muted">Progress</small>
+                                <small class="text-muted">{{ "%.1f"|format(campaign.progress_percentage) }}%</small>
+                            </div>
+                            <div class="progress">
+                                <div class="progress-bar" role="progressbar" 
+                                     style="width: {{ campaign.progress_percentage }}%"
+                                     aria-valuenow="{{ campaign.progress_percentage }}" 
+                                     aria-valuemin="0" aria-valuemax="100"></div>
+                            </div>
+                            <div class="d-flex justify-content-between mt-1">
+                                <small class="text-success fw-bold">${{ "%.0f"|format(campaign.current_amount) }}</small>
+                                <small class="text-muted">of ${{ "%.0f"|format(campaign.goal_amount) }}</small>
+                            </div>
+                        </div>
+                        
+                        <a href="{{ url_for('campaign_detail', id=campaign.id) }}" class="btn btn-primary">
+                            <i class="fas fa-heart me-1"></i>Support Now
+                        </a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        
+        <div class="text-center mt-4">
+            <a href="{{ url_for('campaigns') }}" class="btn btn-outline-primary btn-lg">
+                View All Campaigns <i class="fas fa-arrow-right ms-2"></i>
+            </a>
+        </div>
+    </div>
+</section>
+
+<!-- Latest News -->
+{% if news %}
+<section class="py-5 bg-light">
+    <div class="container">
+        <div class="row mb-5">
+            <div class="col-lg-8 mx-auto text-center">
+                <h2 class="display-5 fw-bold mb-3">Latest News</h2>
+                <p class="lead text-muted">Stay updated with our latest stories and updates</p>
+            </div>
+        </div>
+        
+        <div class="row">
+            {% for article in news %}
+            <div class="col-lg-4 mb-4">
+                <div class="card h-100 shadow-sm border-0">
+                    {% if article.image_url %}
+                    <img src="{{ article.image_url }}" class="card-img-top" alt="{{ article.title }}" style="height: 200px; object-fit: cover;">
+                    {% endif %}
+                    <div class="card-body d-flex flex-column">
+                        <h5 class="card-title">{{ article.title }}</h5>
+                        <p class="card-text flex-grow-1">{{ article.content[:100] }}...</p>
+                        <div class="d-flex justify-content-between align-items-center mt-auto">
+                            <a href="{{ url_for('news_detail', id=article.id) }}" class="btn btn-outline-primary btn-sm">Read More</a>
+                            <small class="text-muted">{{ article.published_date.strftime('%B %d, %Y') }}</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endif %}
+
+<!-- Call to Action -->
+<section class="py-5 bg-primary text-white">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-8">
+                <h2 class="display-6 fw-bold mb-3">Ready to Make an Impact?</h2>
+                <p class="lead mb-0">Join thousands of supporters who are changing lives every day</p>
+            </div>
+            <div class="col-lg-4 text-lg-end">
+                <a href="{{ url_for('register') }}" class="btn btn-light btn-lg">
+                    <i class="fas fa-rocket me-2"></i>Start Today
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
