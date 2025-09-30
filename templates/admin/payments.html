@@ -59,9 +59,11 @@
                             </td>
                             <td>
                                 {% if method.method_type == 'crypto' %}
-                                    <small class="font-monospace">{{ method.details.wallet_address[:20] }}...</small>
+                                    <small class="font-monospace">{{ method.details.get('wallet_address', '')[:20] }}...</small>
+                                {% elif method.method_type == 'bank' %}
+                                    <small>{{ method.details.get('bank_name', 'N/A') }} - {{ method.details.get('account_number', 'N/A')[-4:] if method.details.get('account_number') else 'N/A' }}</small>
                                 {% else %}
-                                    <small>{{ method.details.bank_name }} - {{ method.details.account_number[-4:] }}</small>
+                                    <small>{{ method.details.get('paypal_email', 'N/A') }}</small>
                                 {% endif %}
                             </td>
                             <td>
