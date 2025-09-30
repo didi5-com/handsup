@@ -323,16 +323,21 @@ def create_tables():
     db.create_all()
     
     # Create admin user if doesn't exist
-    admin = User.query.filter_by(email=app.config['ADMIN_EMAIL']).first()
-    if not admin:
-        admin = User(
-            email=app.config['ADMIN_EMAIL'],
-            full_name='Admin User',
-            is_admin=True
-        )
-        admin.set_password(app.config['ADMIN_PASSWORD'])
-        db.session.add(admin)
-        db.session.commit()
+    try:
+        admin = User.query.filter_by(email=app.config['ADMIN_EMAIL']).first()
+        if not admin:
+            admin = User(
+                email=app.config['ADMIN_EMAIL'],
+                full_name='Admin User',
+                is_admin=True
+            )
+            admin.set_password(app.config['ADMIN_PASSWORD'])
+            db.session.add(admin)
+            db.session.commit()
+    except Exception as e:
+        db.session.rollback()
+        print(f"Admin user creation failed: {e}")
+        # Try to continue without admin user for now
 
 if __name__ == '__main__':
     with app.app_context():
