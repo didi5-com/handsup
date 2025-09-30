@@ -1,0 +1,47 @@
+UndefinedError
+jinja2.exceptions.UndefinedError: 'dict object' has no attribute 'account_number'
+
+Traceback (most recent call last)
+File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/flask/app.py", line 1478, in __call__
+return self.wsgi_app(environ, start_response)
+       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/flask/app.py", line 1458, in wsgi_app
+response = self.handle_exception(e)
+           ^^^^^^^^^^^^^^^^^^^^^^^^
+File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/flask/app.py", line 1455, in wsgi_app
+response = self.full_dispatch_request()
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/flask/app.py", line 869, in full_dispatch_request
+rv = self.handle_user_exception(e)
+     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/flask/app.py", line 867, in full_dispatch_request
+rv = self.dispatch_request()
+     ^^^^^^^^^^^^^^^^^^^^^^^
+File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/flask/app.py", line 852, in dispatch_request
+return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)
+       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/flask_login/utils.py", line 290, in decorated_view
+return current_app.ensure_sync(func)(*args, **kwargs)
+       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+File "/home/runner/workspace/main.py", line 376, in admin_payments
+return render_template('admin/payments.html', payment_methods=payment_methods)
+       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/flask/templating.py", line 152, in render_template
+return _render(app, template, context)
+       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/flask/templating.py", line 133, in _render
+rv = template.render(context)
+     ^^^^^^^^^^^^^^^^^^^^^^^^
+File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/jinja2/environment.py", line 1301, in render
+self.environment.handle_exception()
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/jinja2/environment.py", line 936, in handle_exception
+raise rewrite_traceback_stack(source=source)
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+File "/home/runner/workspace/templates/admin/payments.html", line 2, in top-level template code
+{% extends "base.html" %}
+File "/home/runner/workspace/templates/base.html", line 100, in top-level template code
+{% block content %}{% endblock %}
+File "/home/runner/workspace/templates/admin/payments.html", line 64, in block 'content'
+<small>{{ method.details.bank_name }} - {{ method.details.account_number[-4:] }}</small>
+jinja2.exceptions.UndefinedError: 'dict object' has no attribute 'account_number'
