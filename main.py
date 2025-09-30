@@ -319,7 +319,6 @@ def admin_new_payment_method():
     return render_template('admin/payment_form.html', form=form, title='New Payment Method')
 
 # Initialize database
-@app.before_first_request
 def create_tables():
     db.create_all()
     
@@ -336,4 +335,6 @@ def create_tables():
         db.session.commit()
 
 if __name__ == '__main__':
+    with app.app_context():
+        create_tables()
     app.run(host='0.0.0.0', port=5000, debug=True)
