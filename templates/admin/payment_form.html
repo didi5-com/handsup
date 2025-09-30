@@ -1,0 +1,108 @@
+
+{% extends "base.html" %}
+
+{% block title %}{{ title }} - Admin{% endblock %}
+
+{% block content %}
+<div class="container my-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-6">
+            <div class="card">
+                <div class="card-header">
+                    <h3>{{ title }}</h3>
+                </div>
+                <div class="card-body">
+                    <form method="POST" id="paymentForm">
+                        {{ form.hidden_tag() }}
+                        
+                        <div class="mb-4">
+                            {{ form.method_type.label(class="form-label") }}
+                            {{ form.method_type(class="form-select", onchange="toggleFields()") }}
+                        </div>
+
+                        <div class="mb-4">
+                            {{ form.name.label(class="form-label") }}
+                            {{ form.name(class="form-control", placeholder="e.g., Bitcoin Wallet, Bank of America") }}
+                            {% if form.name.errors %}
+                                <div class="text-danger">
+                                    {% for error in form.name.errors %}
+                                        <small>{{ error }}</small>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+
+                        <!-- Crypto Fields -->
+                        <div id="cryptoFields" style="display: none;">
+                            <div class="mb-4">
+                                {{ form.wallet_address.label(class="form-label") }}
+                                {{ form.wallet_address(class="form-control font-monospace", placeholder="Enter wallet address") }}
+                                <div class="form-text">
+                                    <small>Enter the cryptocurrency wallet address</small>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Bank Fields -->
+                        <div id="bankFields" style="display: none;">
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    {{ form.bank_name.label(class="form-label") }}
+                                    {{ form.bank_name(class="form-control", placeholder="Bank Name") }}
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    {{ form.account_holder.label(class="form-label") }}
+                                    {{ form.account_holder(class="form-control", placeholder="Account Holder") }}
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    {{ form.account_number.label(class="form-label") }}
+                                    {{ form.account_number(class="form-control", placeholder="Account Number") }}
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    {{ form.routing_number.label(class="form-label") }}
+                                    {{ form.routing_number(class="form-control", placeholder="Routing Number") }}
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                            <a href="{{ url_for('admin_payments') }}" class="btn btn-outline-secondary">
+                                Cancel
+                            </a>
+                            <button type="submit" class="btn btn-info">
+                                <i class="fas fa-save me-2"></i>Add Payment Method
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function toggleFields() {
+    const methodType = document.getElementById('method_type').value;
+    const cryptoFields = document.getElementById('cryptoFields');
+    const bankFields = document.getElementById('bankFields');
+    
+    if (methodType === 'crypto') {
+        cryptoFields.style.display = 'block';
+        bankFields.style.display = 'none';
+    } else if (methodType === 'bank') {
+        cryptoFields.style.display = 'none';
+        bankFields.style.display = 'block';
+    } else {
+        cryptoFields.style.display = 'none';
+        bankFields.style.display = 'none';
+    }
+}
+
+// Initialize on page load
+document.addEventListener('DOMContentLoaded', function() {
+    toggleFields();
+});
+</script>
+{% endblock %}

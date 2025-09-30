@@ -1,0 +1,85 @@
+
+{% extends "base.html" %}
+
+{% block title %}News & Updates - Hands Up{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <div class="row">
+        <div class="col-lg-12">
+            <h1 class="mb-4">News & Updates</h1>
+            <p class="lead mb-5">Stay updated with the latest news from our campaigns and community impact stories.</p>
+
+            <div class="row">
+                {% for article in news.items %}
+                <div class="col-md-6 col-lg-4 mb-4">
+                    <div class="card h-100">
+                        <img src="{{ article.image_url or 'https://via.placeholder.com/300x200' }}" 
+                             class="card-img-top" alt="{{ article.title }}" style="height: 200px; object-fit: cover;">
+                        <div class="card-body d-flex flex-column">
+                            <h5 class="card-title">{{ article.title }}</h5>
+                            <p class="card-text flex-grow-1">{{ article.content[:150] }}...</p>
+                            <div class="mt-auto">
+                                <small class="text-muted">
+                                    <i class="fas fa-calendar me-1"></i>
+                                    {{ article.published_date.strftime('%B %d, %Y') }}
+                                </small>
+                                <a href="{{ url_for('news_detail', id=article.id) }}" 
+                                   class="btn btn-primary btn-sm float-end">
+                                    Read More
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+
+            <!-- Pagination -->
+            {% if news.pages > 1 %}
+            <nav aria-label="News pagination" class="mt-5">
+                <ul class="pagination justify-content-center">
+                    {% if news.has_prev %}
+                        <li class="page-item">
+                            <a class="page-link" href="{{ url_for('news', page=news.prev_num) }}">Previous</a>
+                        </li>
+                    {% endif %}
+                    
+                    {% for page_num in news.iter_pages() %}
+                        {% if page_num %}
+                            {% if page_num != news.page %}
+                                <li class="page-item">
+                                    <a class="page-link" href="{{ url_for('news', page=page_num) }}">{{ page_num }}</a>
+                                </li>
+                            {% else %}
+                                <li class="page-item active">
+                                    <span class="page-link">{{ page_num }}</span>
+                                </li>
+                            {% endif %}
+                        {% else %}
+                            <li class="page-item disabled">
+                                <span class="page-link">...</span>
+                            </li>
+                        {% endif %}
+                    {% endfor %}
+                    
+                    {% if news.has_next %}
+                        <li class="page-item">
+                            <a class="page-link" href="{{ url_for('news', page=news.next_num) }}">Next</a>
+                        </li>
+                    {% endif %}
+                </ul>
+            </nav>
+            {% endif %}
+
+            {% if not news.items %}
+            <div class="text-center py-5">
+                <i class="fas fa-newspaper fa-3x text-muted mb-3"></i>
+                <h5>No news articles yet</h5>
+                <p class="text-muted">Check back soon for updates from our community.</p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

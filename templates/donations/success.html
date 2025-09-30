@@ -1,0 +1,39 @@
+
+{% extends "base.html" %}
+
+{% block title %}Donation Successful - Hands Up{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-6">
+            <div class="card text-center">
+                <div class="card-body py-5">
+                    <i class="fas fa-check-circle fa-4x text-success mb-4"></i>
+                    <h2>Thank You!</h2>
+                    <p class="lead">Your donation has been processed successfully.</p>
+                    
+                    <div class="card bg-light mb-4">
+                        <div class="card-body">
+                            <h5>Donation Details</h5>
+                            <p><strong>Amount:</strong> ${{ "%.2f"|format(donation.amount) }}</p>
+                            <p><strong>Campaign:</strong> {{ donation.campaign.title }}</p>
+                            <p><strong>Date:</strong> {{ donation.donation_date.strftime('%B %d, %Y at %I:%M %p') }}</p>
+                            <p><strong>Reference:</strong> {{ donation.payment_reference or donation.id }}</p>
+                        </div>
+                    </div>
+
+                    <div class="d-grid gap-2">
+                        <a href="{{ url_for('campaign_detail', id=donation.campaign_id) }}" class="btn btn-primary">
+                            Back to Campaign
+                        </a>
+                        <a href="{{ url_for('campaigns') }}" class="btn btn-outline-primary">
+                            Browse More Campaigns
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

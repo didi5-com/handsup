@@ -1,0 +1,153 @@
+
+{% extends "base.html" %}
+
+{% block title %}My Profile - Hands Up{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <div class="row">
+        <div class="col-lg-4">
+            <div class="card">
+                <div class="card-body text-center">
+                    <img src="{{ current_user.profile_picture or 'https://via.placeholder.com/150' }}" 
+                         alt="Profile" class="rounded-circle mb-3" width="150" height="150" style="object-fit: cover;">
+                    <h4>{{ current_user.full_name }}</h4>
+                    <p class="text-muted">{{ current_user.email }}</p>
+                    <p class="text-muted">
+                        <i class="fas fa-calendar me-2"></i>
+                        Member since {{ current_user.date_joined.strftime('%B %Y') }}
+                    </p>
+                    {% if current_user.phone %}
+                    <p class="text-muted">
+                        <i class="fas fa-phone me-2"></i>
+                        {{ current_user.phone }}
+                    </p>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Donation Summary -->
+            <div class="card mt-4">
+                <div class="card-header">
+                    <h5>Donation Summary</h5>
+                </div>
+                <div class="card-body">
+                    {% set total_donated = donations|sum(attribute='amount') if donations else 0 %}
+                    {% set confirmed_donations = donations|selectattr('status', 'equalto', 'confirmed')|list %}
+                    
+                    <div class="row text-center">
+                        <div class="col-6 mb-3">
+                            <h4 class="text-primary">${{ "%.2f"|format(total_donated) }}</h4>
+                            <small class="text-muted">Total Donated</small>
+                        </div>
+                        <div class="col-6 mb-3">
+                            <h4 class="text-success">{{ confirmed_donations|length }}</h4>
+                            <small class="text-muted">Campaigns Supported</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-8">
+            <div class="card">
+                <div class="card-header">
+                    <h5>My Donations</h5>
+                </div>
+                <div class="card-body">
+                    {% if donations %}
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Campaign</th>
+                                    <th>Amount</th>
+                                    <th>Date</th>
+                                    <th>Payment Method</th>
+                                    <th>Status</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for donation in donations %}
+                                <tr>
+                                    <td>
+                                        <a href="{{ url_for('campaign_detail', id=donation.campaign_id) }}" 
+                                           class="text-decoration-none">
+                                            {{ donation.campaign.title }}
+                                        </a>
+                                    </td>
+                                    <td>${{ "%.2f"|format(donation.amount) }}</td>
+                                    <td>{{ donation.donation_date.strftime('%m/%d/%Y') }}</td>
+                                    <td>
+                                        <span class="badge bg-secondary">
+                                            {% if donation.payment_method == 'card' %}
+                                                Credit Card
+                                            {% elif donation.payment_method == 'crypto' %}
+                                                Cryptocurrency
+                                            {% elif donation.payment_method == 'bank' %}
+                                                Bank Transfer
+                                            {% endif %}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-{{ 'success' if donation.status == 'confirmed' else 'warning' if donation.status == 'pending' else 'danger' }}">
+                                            {{ donation.status.title() }}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <a href="{{ url_for('campaign_detail', id=donation.campaign_id) }}" 
+                                           class="btn btn-sm btn-outline-primary">
+                                            View Campaign
+                                        </a>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <div class="text-center py-5">
+                        <i class="fas fa-heart fa-3x text-muted mb-3"></i>
+                        <h5>No donations yet</h5>
+                        <p class="text-muted">Start making a difference by supporting a campaign.</p>
+                        <a href="{{ url_for('campaigns') }}" class="btn btn-primary">
+                            Browse Campaigns
+                        </a>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Supported Campaigns -->
+            {% if donations %}
+            {% set supported_campaigns = donations|map(attribute='campaign')|unique|list %}
+            <div class="card mt-4">
+                <div class="card-header">
+                    <h5>Campaigns You've Supported</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        {% for campaign in supported_campaigns[:6] %}
+                        <div class="col-md-6 mb-3">
+                            <div class="card border-0 shadow-sm">
+                                <div class="card-body">
+                                    <h6>{{ campaign.title }}</h6>
+                                    <div class="progress mb-2" style="height: 5px;">
+                                        <div class="progress-bar" style="width: {{ campaign.progress_percentage }}%"></div>
+                                    </div>
+                                    <small class="text-muted">
+                                        ${{ "%.0f"|format(campaign.current_amount) }} of ${{ "%.0f"|format(campaign.goal_amount) }}
+                                    </small>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

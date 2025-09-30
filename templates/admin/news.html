@@ -1,0 +1,73 @@
+
+{% extends "base.html" %}
+
+{% block title %}Manage News - Admin{% endblock %}
+
+{% block content %}
+<div class="container-fluid my-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1>Manage News Articles</h1>
+        <a href="{{ url_for('admin_new_news') }}" class="btn btn-success">
+            <i class="fas fa-plus me-2"></i>New Article
+        </a>
+    </div>
+
+    <div class="card">
+        <div class="card-body">
+            {% if news %}
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Title</th>
+                            <th>Published Date</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for article in news %}
+                        <tr>
+                            <td>
+                                <strong>{{ article.title }}</strong><br>
+                                <small class="text-muted">{{ article.content[:100] }}...</small>
+                            </td>
+                            <td>{{ article.published_date.strftime('%m/%d/%Y %I:%M %p') }}</td>
+                            <td>
+                                <span class="badge bg-{{ 'success' if article.is_published else 'secondary' }}">
+                                    {{ 'Published' if article.is_published else 'Draft' }}
+                                </span>
+                            </td>
+                            <td>
+                                <div class="btn-group btn-group-sm">
+                                    <a href="{{ url_for('news_detail', id=article.id) }}" 
+                                       class="btn btn-outline-primary" title="View">
+                                        <i class="fas fa-eye"></i>
+                                    </a>
+                                    <button class="btn btn-outline-secondary" title="Edit">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                    <button class="btn btn-outline-danger" title="Delete">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <div class="text-center py-5">
+                <i class="fas fa-newspaper fa-3x text-muted mb-3"></i>
+                <h5>No news articles yet</h5>
+                <p class="text-muted">Create your first news article to keep supporters updated.</p>
+                <a href="{{ url_for('admin_new_news') }}" class="btn btn-success">
+                    Create Article
+                </a>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

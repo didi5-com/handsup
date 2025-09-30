@@ -1,0 +1,90 @@
+
+{% extends "base.html" %}
+
+{% block title %}Payment Instructions - Hands Up{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card">
+                <div class="card-header">
+                    <h3>Payment Instructions</h3>
+                    <p class="mb-0 text-muted">Donation Amount: ${{ "%.2f"|format(donation.amount) }}</p>
+                </div>
+                <div class="card-body">
+                    {% if donation.payment_method == 'crypto' %}
+                        <h5>Cryptocurrency Payment</h5>
+                        <p>Please send your donation to one of the following wallet addresses:</p>
+                        
+                        {% for method in payment_methods %}
+                            {% if method.method_type == 'crypto' %}
+                            <div class="card mb-3">
+                                <div class="card-body">
+                                    <h6>{{ method.name }}</h6>
+                                    <p class="font-monospace">{{ method.details.wallet_address }}</p>
+                                    <button class="btn btn-sm btn-outline-primary" onclick="copyToClipboard('{{ method.details.wallet_address }}')">
+                                        Copy Address
+                                    </button>
+                                </div>
+                            </div>
+                            {% endif %}
+                        {% endfor %}
+                        
+                    {% elif donation.payment_method == 'bank' %}
+                        <h5>Bank Transfer</h5>
+                        <p>Please transfer your donation to one of the following bank accounts:</p>
+                        
+                        {% for method in payment_methods %}
+                            {% if method.method_type == 'bank' %}
+                            <div class="card mb-3">
+                                <div class="card-body">
+                                    <h6>{{ method.name }}</h6>
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <strong>Account Holder:</strong> {{ method.details.account_holder }}<br>
+                                            <strong>Account Number:</strong> {{ method.details.account_number }}
+                                        </div>
+                                        <div class="col-md-6">
+                                            <strong>Bank Name:</strong> {{ method.details.bank_name }}<br>
+                                            <strong>Routing Number:</strong> {{ method.details.routing_number }}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endif %}
+                        {% endfor %}
+                    {% endif %}
+
+                    <div class="alert alert-info mt-4">
+                        <h6>Important:</h6>
+                        <ul class="mb-0">
+                            <li>Your donation reference ID is: <strong>{{ donation.id }}</strong></li>
+                            <li>Please include this reference in your payment memo/description</li>
+                            <li>Your donation will be confirmed within 24-48 hours after payment verification</li>
+                            <li>You will receive an email confirmation once your donation is processed</li>
+                        </ul>
+                    </div>
+
+                    <div class="d-grid gap-2 mt-4">
+                        <a href="{{ url_for('profile') }}" class="btn btn-primary">
+                            View My Donations
+                        </a>
+                        <a href="{{ url_for('campaign_detail', id=donation.campaign_id) }}" class="btn btn-outline-secondary">
+                            Back to Campaign
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function copyToClipboard(text) {
+    navigator.clipboard.writeText(text).then(function() {
+        alert('Address copied to clipboard!');
+    });
+}
+</script>
+{% endblock %}

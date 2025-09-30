@@ -1,0 +1,66 @@
+
+{% extends "base.html" %}
+
+{% block title %}{{ article.title }} - Hands Up News{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <article>
+                <header class="mb-4">
+                    <h1 class="display-5 fw-bold">{{ article.title }}</h1>
+                    <p class="text-muted">
+                        <i class="fas fa-calendar me-2"></i>
+                        Published on {{ article.published_date.strftime('%B %d, %Y at %I:%M %p') }}
+                    </p>
+                </header>
+
+                {% if article.image_url %}
+                <div class="mb-4">
+                    <img src="{{ article.image_url }}" alt="{{ article.title }}" 
+                         class="img-fluid rounded shadow">
+                </div>
+                {% endif %}
+
+                <div class="article-content">
+                    {{ article.content|safe|nl2br }}
+                </div>
+
+                <footer class="mt-5 pt-4 border-top">
+                    <div class="row align-items-center">
+                        <div class="col-md-6">
+                            <a href="{{ url_for('news') }}" class="btn btn-outline-primary">
+                                <i class="fas fa-arrow-left me-2"></i>Back to News
+                            </a>
+                        </div>
+                        <div class="col-md-6 text-md-end">
+                            <div class="btn-group">
+                                <button class="btn btn-outline-primary" onclick="shareOnFacebook()">
+                                    <i class="fab fa-facebook me-1"></i>Share
+                                </button>
+                                <button class="btn btn-outline-info" onclick="shareOnTwitter()">
+                                    <i class="fab fa-twitter me-1"></i>Tweet
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </footer>
+            </article>
+        </div>
+    </div>
+</div>
+
+<script>
+function shareOnFacebook() {
+    const url = encodeURIComponent(window.location.href);
+    window.open(`https://www.facebook.com/sharer/sharer.php?u=${url}`, '_blank');
+}
+
+function shareOnTwitter() {
+    const url = encodeURIComponent(window.location.href);
+    const text = encodeURIComponent('{{ article.title }}');
+    window.open(`https://twitter.com/intent/tweet?url=${url}&text=${text}`, '_blank');
+}
+</script>
+{% endblock %}

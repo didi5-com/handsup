@@ -26,6 +26,41 @@ class DonationForm(FlaskForm):
     message = TextAreaField('Message (Optional)', widget=TextArea())
 
 class CampaignForm(FlaskForm):
+    title = StringField('Campaign Title', validators=[DataRequired(), Length(min=5, max=200)])
+    description = TextAreaField('Description', validators=[DataRequired(), Length(min=50)])
+    goal_amount = FloatField('Goal Amount', validators=[DataRequired(), NumberRange(min=100)])
+    category = SelectField('Category', 
+                         choices=[('', 'Select Category'),
+                                 ('health', 'Health'),
+                                 ('education', 'Education'), 
+                                 ('environment', 'Environment'),
+                                 ('emergency', 'Emergency Relief'),
+                                 ('community', 'Community'),
+                                 ('animals', 'Animals')])
+    image_url = StringField('Image URL', validators=[Length(max=300)])
+    end_date = DateField('End Date (Optional)', format='%Y-%m-%d')
+
+class NewsForm(FlaskForm):
+    title = StringField('Article Title', validators=[DataRequired(), Length(min=5, max=200)])
+    content = TextAreaField('Content', validators=[DataRequired(), Length(min=100)])
+    image_url = StringField('Image URL', validators=[Length(max=300)])
+
+class PaymentMethodForm(FlaskForm):
+    method_type = SelectField('Payment Type', 
+                            choices=[('crypto', 'Cryptocurrency'), ('bank', 'Bank Transfer')],
+                            validators=[DataRequired()])
+    name = StringField('Payment Method Name', validators=[DataRequired(), Length(min=2, max=100)])
+    
+    # Crypto fields
+    wallet_address = StringField('Wallet Address', validators=[Length(max=200)])
+    
+    # Bank fields  
+    bank_name = StringField('Bank Name', validators=[Length(max=100)])
+    account_number = StringField('Account Number', validators=[Length(max=50)])
+    routing_number = StringField('Routing Number', validators=[Length(max=20)])
+    account_holder = StringField('Account Holder Name', validators=[Length(max=100)])
+
+class CampaignForm(FlaskForm):
     title = StringField('Campaign Title', validators=[DataRequired(), Length(max=200)])
     description = TextAreaField('Description', validators=[DataRequired()], widget=TextArea())
     goal_amount = FloatField('Goal Amount ($)', validators=[DataRequired(), NumberRange(min=100)])

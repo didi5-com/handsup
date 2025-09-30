@@ -1,0 +1,120 @@
+
+{% extends "base.html" %}
+
+{% block title %}Donate to {{ campaign.title }} - Hands Up{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card shadow">
+                <div class="card-header">
+                    <h3>Make a Donation</h3>
+                    <p class="mb-0 text-muted">Support: {{ campaign.title }}</p>
+                </div>
+                <div class="card-body">
+                    <form method="POST">
+                        {{ form.hidden_tag() }}
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-4">
+                                {{ form.amount.label(class="form-label") }}
+                                <div class="input-group">
+                                    <span class="input-group-text">$</span>
+                                    {{ form.amount(class="form-control form-control-lg", placeholder="0.00") }}
+                                </div>
+                                {% if form.amount.errors %}
+                                    <div class="text-danger">
+                                        {% for error in form.amount.errors %}
+                                            <small>{{ error }}</small>
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                                
+                                <!-- Quick Amount Buttons -->
+                                <div class="mt-2">
+                                    <button type="button" class="btn btn-outline-primary btn-sm me-2" onclick="setAmount(25)">$25</button>
+                                    <button type="button" class="btn btn-outline-primary btn-sm me-2" onclick="setAmount(50)">$50</button>
+                                    <button type="button" class="btn btn-outline-primary btn-sm me-2" onclick="setAmount(100)">$100</button>
+                                    <button type="button" class="btn btn-outline-primary btn-sm" onclick="setAmount(250)">$250</button>
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-6 mb-4">
+                                {{ form.payment_method.label(class="form-label") }}
+                                {{ form.payment_method(class="form-select form-select-lg") }}
+                                {% if form.payment_method.errors %}
+                                    <div class="text-danger">
+                                        {% for error in form.payment_method.errors %}
+                                            <small>{{ error }}</small>
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <div class="mb-4">
+                            {{ form.message.label(class="form-label") }}
+                            {{ form.message(class="form-control", rows="3", placeholder="Leave a message of support (optional)") }}
+                        </div>
+
+                        <div class="mb-4">
+                            <div class="form-check">
+                                {{ form.anonymous(class="form-check-input") }}
+                                {{ form.anonymous.label(class="form-check-label") }}
+                                <small class="form-text text-muted d-block">Your donation will be anonymous if checked</small>
+                            </div>
+                        </div>
+
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary btn-lg">
+                                <i class="fas fa-heart me-2"></i>Donate Now
+                            </button>
+                            <a href="{{ url_for('campaign_detail', id=campaign.id) }}" class="btn btn-outline-secondary">
+                                Back to Campaign
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Payment Methods Info -->
+            <div class="card mt-4">
+                <div class="card-header">
+                    <h5>Available Payment Methods</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+                            <div class="text-center">
+                                <i class="fas fa-credit-card fa-2x text-primary mb-2"></i>
+                                <h6>Credit/Debit Card</h6>
+                                <small class="text-muted">Instant processing via Stripe</small>
+                            </div>
+                        </div>
+                        {% for method in payment_methods %}
+                        <div class="col-md-4 mb-3">
+                            <div class="text-center">
+                                {% if method.method_type == 'crypto' %}
+                                    <i class="fab fa-bitcoin fa-2x text-warning mb-2"></i>
+                                {% else %}
+                                    <i class="fas fa-university fa-2x text-success mb-2"></i>
+                                {% endif %}
+                                <h6>{{ method.name }}</h6>
+                                <small class="text-muted">Manual verification required</small>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function setAmount(amount) {
+    document.getElementById('amount').value = amount;
+}
+</script>
+{% endblock %}

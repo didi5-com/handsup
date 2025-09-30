@@ -1,0 +1,101 @@
+
+{% extends "base.html" %}
+
+{% block title %}Payment Methods - Admin{% endblock %}
+
+{% block content %}
+<div class="container-fluid my-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1>Payment Methods</h1>
+        <a href="{{ url_for('admin_new_payment_method') }}" class="btn btn-info">
+            <i class="fas fa-plus me-2"></i>Add Payment Method
+        </a>
+    </div>
+
+    <div class="row mb-4">
+        <div class="col-lg-4">
+            <div class="card border-primary">
+                <div class="card-header bg-primary text-white">
+                    <h5><i class="fas fa-credit-card me-2"></i>Card Payments</h5>
+                </div>
+                <div class="card-body">
+                    <p>Stripe integration for instant card payments</p>
+                    <span class="badge bg-success">Active</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-header">
+            <h5>Manual Payment Methods</h5>
+        </div>
+        <div class="card-body">
+            {% if payment_methods %}
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Type</th>
+                            <th>Details</th>
+                            <th>Status</th>
+                            <th>Created</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for method in payment_methods %}
+                        <tr>
+                            <td><strong>{{ method.name }}</strong></td>
+                            <td>
+                                <span class="badge bg-{{ 'warning' if method.method_type == 'crypto' else 'success' }}">
+                                    {% if method.method_type == 'crypto' %}
+                                        <i class="fab fa-bitcoin me-1"></i>Cryptocurrency
+                                    {% else %}
+                                        <i class="fas fa-university me-1"></i>Bank Transfer
+                                    {% endif %}
+                                </span>
+                            </td>
+                            <td>
+                                {% if method.method_type == 'crypto' %}
+                                    <small class="font-monospace">{{ method.details.wallet_address[:20] }}...</small>
+                                {% else %}
+                                    <small>{{ method.details.bank_name }} - {{ method.details.account_number[-4:] }}</small>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <span class="badge bg-{{ 'success' if method.is_active else 'secondary' }}">
+                                    {{ 'Active' if method.is_active else 'Inactive' }}
+                                </span>
+                            </td>
+                            <td>{{ method.created_date.strftime('%m/%d/%Y') }}</td>
+                            <td>
+                                <div class="btn-group btn-group-sm">
+                                    <button class="btn btn-outline-secondary" title="Edit">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                    <button class="btn btn-outline-danger" title="Delete">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <div class="text-center py-5">
+                <i class="fas fa-credit-card fa-3x text-muted mb-3"></i>
+                <h5>No manual payment methods configured</h5>
+                <p class="text-muted">Add cryptocurrency wallets or bank transfer details for manual donations.</p>
+                <a href="{{ url_for('admin_new_payment_method') }}" class="btn btn-info">
+                    Add Payment Method
+                </a>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

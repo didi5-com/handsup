@@ -1,0 +1,142 @@
+
+{% extends "base.html" %}
+
+{% block title %}Contact Us - Hands Up{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <div class="row">
+        <div class="col-lg-8 mx-auto">
+            <div class="text-center mb-5">
+                <h1 class="display-4 fw-bold">Contact Us</h1>
+                <p class="lead">Have questions? We're here to help. Reach out to us anytime.</p>
+            </div>
+
+            <div class="row">
+                <div class="col-md-8">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5>Send us a Message</h5>
+                        </div>
+                        <div class="card-body">
+                            <form>
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label for="firstName" class="form-label">First Name</label>
+                                        <input type="text" class="form-control" id="firstName" required>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label for="lastName" class="form-label">Last Name</label>
+                                        <input type="text" class="form-control" id="lastName" required>
+                                    </div>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="email" class="form-label">Email Address</label>
+                                    <input type="email" class="form-control" id="email" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="subject" class="form-label">Subject</label>
+                                    <select class="form-select" id="subject" required>
+                                        <option value="">Choose a topic</option>
+                                        <option value="general">General Inquiry</option>
+                                        <option value="campaign">Campaign Support</option>
+                                        <option value="donation">Donation Issues</option>
+                                        <option value="technical">Technical Support</option>
+                                        <option value="partnership">Partnership</option>
+                                    </select>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="message" class="form-label">Message</label>
+                                    <textarea class="form-control" id="message" rows="5" required></textarea>
+                                </div>
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fas fa-paper-plane me-2"></i>Send Message
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5>Get in Touch</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="mb-4">
+                                <i class="fas fa-envelope text-primary me-3"></i>
+                                <strong>Email:</strong><br>
+                                <a href="mailto:support@handsup.com">support@handsup.com</a>
+                            </div>
+                            <div class="mb-4">
+                                <i class="fas fa-phone text-primary me-3"></i>
+                                <strong>Phone:</strong><br>
+                                <a href="tel:+1234567890">+1 (234) 567-890</a>
+                            </div>
+                            <div class="mb-4">
+                                <i class="fas fa-map-marker-alt text-primary me-3"></i>
+                                <strong>Address:</strong><br>
+                                123 Philanthropy Street<br>
+                                Hope City, HC 12345
+                            </div>
+                            <div class="mb-4">
+                                <i class="fas fa-clock text-primary me-3"></i>
+                                <strong>Business Hours:</strong><br>
+                                Monday - Friday: 9AM - 6PM<br>
+                                Saturday: 10AM - 4PM<br>
+                                Sunday: Closed
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card mt-4">
+                        <div class="card-header">
+                            <h5>Frequently Asked Questions</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="accordion" id="faqAccordion">
+                                <div class="accordion-item">
+                                    <h2 class="accordion-header" id="faq1">
+                                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse1">
+                                            How secure are my donations?
+                                        </button>
+                                    </h2>
+                                    <div id="collapse1" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                                        <div class="accordion-body">
+                                            All payments are processed through secure, encrypted channels. We use Stripe for card payments and verify all manual payments.
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="accordion-item">
+                                    <h2 class="accordion-header" id="faq2">
+                                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse2">
+                                            Can I get a tax receipt?
+                                        </button>
+                                    </h2>
+                                    <div id="collapse2" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                                        <div class="accordion-body">
+                                            Yes, we provide tax receipts for all donations. You can download them from your profile page.
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="accordion-item">
+                                    <h2 class="accordion-header" id="faq3">
+                                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse3">
+                                            How do I start a campaign?
+                                        </button>
+                                    </h2>
+                                    <div id="collapse3" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                                        <div class="accordion-body">
+                                            Contact us with your campaign idea. Our team will review and help you set up a campaign if it meets our guidelines.
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
