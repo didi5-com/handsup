@@ -320,6 +320,15 @@ def admin_new_payment_method():
 
 # Initialize database
 def create_tables():
+    try:
+        # Try to alter the password_hash column if it exists
+        with db.engine.connect() as conn:
+            conn.execute(db.text('ALTER TABLE "user" ALTER COLUMN password_hash TYPE VARCHAR(500);'))
+            conn.commit()
+        print("Successfully updated password_hash column length")
+    except Exception as e:
+        print(f"Migration not needed or failed: {e}")
+    
     db.create_all()
     
     # Create admin user if doesn't exist
@@ -334,6 +343,7 @@ def create_tables():
             admin.set_password(app.config['ADMIN_PASSWORD'])
             db.session.add(admin)
             db.session.commit()
+            print("Admin user created successfully")
     except Exception as e:
         db.session.rollback()
         print(f"Admin user creation failed: {e}")
