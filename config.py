@@ -7,5 +7,7 @@ class Config:
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     STRIPE_PUBLISHABLE_KEY = os.environ.get('STRIPE_PUBLISHABLE_KEY')
     STRIPE_SECRET_KEY = os.environ.get('STRIPE_SECRET_KEY')
+    PAYPAL_CLIENT_ID = os.environ.get('PAYPAL_CLIENT_ID')
+    PAYPAL_CLIENT_SECRET = os.environ.get('PAYPAL_CLIENT_SECRET')
     ADMIN_EMAIL = os.environ.get('ADMIN_EMAIL') or 'ikpedesire5@gmail.com'
     ADMIN_PASSWORD = os.environ.get('ADMIN_PASSWORD') or 'didi5566'

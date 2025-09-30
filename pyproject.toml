@@ -16,6 +16,7 @@ werkzeug = "^3.1.3"
 stripe = "^12.5.1"
 wtforms = "^3.2.1"
 email-validator = "^2.3.0"
+paypalrestsdk = "^1.13.3"
 
 [tool.pyright]
 # https://github.com/microsoft/pyright/blob/main/docs/configuration.md

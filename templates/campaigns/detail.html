@@ -8,102 +8,108 @@
     <div class="row">
         <div class="col-lg-8">
             <div class="card">
-                <img src="{{ campaign.image_url or 'https://via.placeholder.com/800x400' }}" 
-                     class="card-img-top" alt="{{ campaign.title }}" style="height: 400px; object-fit: cover;">
+                {% if campaign.image_url %}
+                <img src="{{ campaign.image_url }}" class="card-img-top" alt="{{ campaign.title }}" style="height: 300px; object-fit: cover;">
+                {% endif %}
                 <div class="card-body">
                     <h1 class="card-title">{{ campaign.title }}</h1>
-                    <p class="text-muted mb-4">
-                        <i class="fas fa-calendar me-2"></i>Created on {{ campaign.created_date.strftime('%B %d, %Y') }}
-                        {% if campaign.category %}
-                            <span class="badge bg-secondary ms-2">{{ campaign.category.title() }}</span>
-                        {% endif %}
-                    </p>
+                    <span class="badge bg-primary mb-3">{{ campaign.category|title }}</span>
                     
-                    <div class="campaign-description">
-                        {{ campaign.description|safe }}
-                    </div>
-                </div>
-            </div>
-
-            <!-- Recent Donations -->
-            {% if recent_donations %}
-            <div class="card mt-4">
-                <div class="card-header">
-                    <h5>Recent Supporters</h5>
-                </div>
-                <div class="card-body">
-                    {% for donation in recent_donations %}
-                    <div class="d-flex align-items-center mb-3">
-                        <div class="flex-grow-1">
-                            <strong>{{ donation.donor.full_name }}</strong>
-                            <small class="text-muted d-block">{{ donation.donation_date.strftime('%B %d, %Y') }}</small>
-                            {% if donation.message %}
-                                <p class="mb-0 mt-1">{{ donation.message }}</p>
-                            {% endif %}
-                        </div>
-                        <div class="text-end">
-                            <span class="badge bg-success">${{ "%.2f"|format(donation.amount) }}</span>
+                    <div class="progress mb-3" style="height: 10px;">
+                        <div class="progress-bar" role="progressbar" 
+                             style="width: {{ campaign.progress_percentage }}%" 
+                             aria-valuenow="{{ campaign.progress_percentage }}" 
+                             aria-valuemin="0" aria-valuemax="100">
                         </div>
                     </div>
-                    {% endfor %}
-                </div>
-            </div>
-            {% endif %}
-        </div>
-
-        <div class="col-lg-4">
-            <div class="card sticky-top" style="top: 100px;">
-                <div class="card-body">
-                    <!-- Progress -->
-                    <div class="mb-4">
-                        <div class="d-flex justify-content-between mb-2">
-                            <h3 class="text-primary">${{ "%.2f"|format(campaign.current_amount) }}</h3>
-                            <span class="text-muted">raised of ${{ "%.2f"|format(campaign.goal_amount) }}</span>
+                    
+                    <div class="row mb-4">
+                        <div class="col-md-4">
+                            <h5 class="text-primary">${{ "%.2f"|format(campaign.current_amount) }}</h5>
+                            <small class="text-muted">Raised</small>
                         </div>
-                        <div class="progress mb-2" style="height: 10px;">
-                            <div class="progress-bar" role="progressbar" 
-                                 style="width: {{ campaign.progress_percentage }}%"></div>
+                        <div class="col-md-4">
+                            <h5 class="text-success">${{ "%.2f"|format(campaign.goal_amount) }}</h5>
+                            <small class="text-muted">Goal</small>
                         </div>
-                        <small class="text-muted">{{ "%.1f"|format(campaign.progress_percentage) }}% funded</small>
-                    </div>
-
-                    <!-- Donation Stats -->
-                    <div class="row text-center mb-4">
-                        <div class="col-6">
-                            <h4>{{ campaign.donations|length }}</h4>
-                            <small class="text-muted">Supporters</small>
-                        </div>
-                        <div class="col-6">
+                        <div class="col-md-4">
                             {% if campaign.end_date %}
-                                {% set days_left = (campaign.end_date - moment().date()).days %}
-                                <h4>{{ days_left if days_left > 0 else 0 }}</h4>
-                                <small class="text-muted">Days left</small>
+                                {% set today = moment.utcnow().date() %}
+                                {% set days_left = (campaign.end_date - today).days %}
+                                {% if days_left > 0 %}
+                                    <h5 class="text-info">{{ days_left }}</h5>
+                                    <small class="text-muted">Days Left</small>
+                                {% else %}
+                                    <h5 class="text-danger">Expired</h5>
+                                    <small class="text-muted">Campaign Ended</small>
+                                {% endif %}
                             {% else %}
-                                <h4>∞</h4>
-                                <small class="text-muted">No deadline</small>
+                                <h5 class="text-secondary">Ongoing</h5>
+                                <small class="text-muted">No End Date</small>
                             {% endif %}
                         </div>
                     </div>
 
-                    <!-- Donate Button -->
+                    <h5>Description</h5>
+                    <p class="card-text">{{ campaign.description|safe }}</p>
+                    
                     {% if current_user.is_authenticated %}
-                        <a href="{{ url_for('donate', campaign_id=campaign.id) }}" 
-                           class="btn btn-primary btn-lg w-100 mb-3">
+                        <a href="{{ url_for('donate', campaign_id=campaign.id) }}" class="btn btn-primary btn-lg">
                             <i class="fas fa-heart me-2"></i>Donate Now
                         </a>
                     {% else %}
-                        <a href="{{ url_for('login') }}" class="btn btn-primary btn-lg w-100 mb-3">
-                            Login to Donate
+                        <a href="{{ url_for('login') }}" class="btn btn-primary btn-lg">
+                            <i class="fas fa-sign-in-alt me-2"></i>Login to Donate
                         </a>
                     {% endif %}
-
-                    <!-- Share -->
-                    <div class="d-grid gap-2">
-                        <button class="btn btn-outline-primary" onclick="shareOnFacebook()">
-                            <i class="fab fa-facebook me-2"></i>Share on Facebook
-                        </button>
-                        <button class="btn btn-outline-info" onclick="shareOnTwitter()">
-                            <i class="fab fa-twitter me-2"></i>Share on Twitter
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-lg-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5>Recent Donations</h5>
+                </div>
+                <div class="card-body">
+                    {% if recent_donations %}
+                        {% for donation in recent_donations %}
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <div>
+                                <strong>{{ donation.donor.full_name }}</strong>
+                                <br>
+                                <small class="text-muted">{{ donation.donation_date.strftime('%m/%d/%Y') }}</small>
+                            </div>
+                            <span class="badge bg-success">${{ "%.2f"|format(donation.amount) }}</span>
+                        </div>
+                        {% if donation.message %}
+                        <blockquote class="blockquote-footer mb-3">
+                            <small>{{ donation.message }}</small>
+                        </blockquote>
+                        {% endif %}
+                        {% endfor %}
+                    {% else %}
+                        <p class="text-muted">No donations yet. Be the first to support this campaign!</p>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <div class="card mt-4">
+                <div class="card-header">
+                    <h6>Share This Campaign</h6>
+                </div>
+                <div class="card-body text-center">
+                    <div class="btn-group" role="group">
+                        <a href="https://www.facebook.com/sharer/sharer.php?u={{ request.url }}" target="_blank" 
+                           class="btn btn-outline-primary btn-sm">
+                            <i class="fab fa-facebook-f"></i>
+                        </a>
+                        <a href="https://twitter.com/intent/tweet?url={{ request.url }}&text={{ campaign.title }}" target="_blank"
+                           class="btn btn-outline-info btn-sm">
+                            <i class="fab fa-twitter"></i>
+                        </a>
+                        <button class="btn btn-outline-secondary btn-sm" onclick="copyLink()">
+                            <i class="fas fa-link"></i>
                         </button>
                     </div>
                 </div>
@@ -113,15 +119,10 @@
 </div>
 
 <script>
-function shareOnFacebook() {
-    const url = encodeURIComponent(window.location.href);
-    window.open(`https://www.facebook.com/sharer/sharer.php?u=${url}`, '_blank');
-}
-
-function shareOnTwitter() {
-    const url = encodeURIComponent(window.location.href);
-    const text = encodeURIComponent('Check out this campaign: {{ campaign.title }}');
-    window.open(`https://twitter.com/intent/tweet?url=${url}&text=${text}`, '_blank');
+function copyLink() {
+    navigator.clipboard.writeText(window.location.href).then(function() {
+        alert('Link copied to clipboard!');
+    });
 }
 </script>
 {% endblock %}

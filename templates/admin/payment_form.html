@@ -43,6 +43,17 @@
                             </div>
                         </div>
 
+                        <!-- PayPal Fields -->
+                        <div id="paypalFields" style="display: none;">
+                            <div class="mb-4">
+                                {{ form.paypal_email.label(class="form-label") }}
+                                {{ form.paypal_email(class="form-control", placeholder="paypal@example.com") }}
+                                <div class="form-text">
+                                    <small>Enter the PayPal account email for receiving donations</small>
+                                </div>
+                            </div>
+                        </div>
+
                         <!-- Bank Fields -->
                         <div id="bankFields" style="display: none;">
                             <div class="row">
@@ -87,16 +98,20 @@ function toggleFields() {
     const methodType = document.getElementById('method_type').value;
     const cryptoFields = document.getElementById('cryptoFields');
     const bankFields = document.getElementById('bankFields');
+    const paypalFields = document.getElementById('paypalFields');
     
+    // Hide all fields first
+    cryptoFields.style.display = 'none';
+    bankFields.style.display = 'none';
+    paypalFields.style.display = 'none';
+    
+    // Show relevant fields
     if (methodType === 'crypto') {
         cryptoFields.style.display = 'block';
-        bankFields.style.display = 'none';
     } else if (methodType === 'bank') {
-        cryptoFields.style.display = 'none';
         bankFields.style.display = 'block';
-    } else {
-        cryptoFields.style.display = 'none';
-        bankFields.style.display = 'none';
+    } else if (methodType === 'paypal') {
+        paypalFields.style.display = 'block';
     }
 }
 

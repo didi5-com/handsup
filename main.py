@@ -5,6 +5,7 @@ from models import db, User, Campaign, Donation, News, PaymentMethod
 from forms import LoginForm, RegistrationForm, DonationForm, CampaignForm, NewsForm, PaymentMethodForm
 from config import Config
 import stripe
+import paypalrestsdk
 import os
 from datetime import datetime
 
@@ -18,6 +19,18 @@ login_manager.init_app(app)
 login_manager.login_view = 'login'
 
 stripe.api_key = app.config['STRIPE_SECRET_KEY']
+
+# Configure PayPal
+paypalrestsdk.configure({
+    "mode": "sandbox",  # Change to "live" for production
+    "client_id": app.config.get('PAYPAL_CLIENT_ID', 'your_paypal_client_id'),
+    "client_secret": app.config.get('PAYPAL_CLIENT_SECRET', 'your_paypal_client_secret')
+})
+
+# Add moment function to template context
+@app.template_global()
+def moment():
+    return datetime
 
 @login_manager.user_loader
 def load_user(user_id):
@@ -106,6 +119,8 @@ def donate(campaign_id):
         
         if form.payment_method.data == 'card':
             return redirect(url_for('process_stripe_payment', donation_id=donation.id))
+        elif form.payment_method.data == 'paypal':
+            return redirect(url_for('process_paypal_payment', donation_id=donation.id))
         else:
             db.session.add(donation)
             db.session.commit()
@@ -161,6 +176,80 @@ def payment_cancel(donation_id):
     db.session.delete(donation)
     db.session.commit()
     flash('Payment was cancelled.')
+    return redirect(url_for('campaign_detail', id=donation.campaign_id))
+
+# PayPal payment processing
+@app.route('/process-paypal-payment/<int:donation_id>')
+@login_required
+def process_paypal_payment(donation_id):
+    donation = Donation.query.get_or_404(donation_id)
+    
+    payment = paypalrestsdk.Payment({
+        "intent": "sale",
+        "payer": {
+            "payment_method": "paypal"
+        },
+        "redirect_urls": {
+            "return_url": url_for('paypal_payment_success', donation_id=donation.id, _external=True),
+            "cancel_url": url_for('paypal_payment_cancel', donation_id=donation.id, _external=True)
+        },
+        "transactions": [{
+            "item_list": {
+                "items": [{
+                    "name": f"Donation to {donation.campaign.title}",
+                    "sku": f"donation-{donation.id}",
+                    "price": str(donation.amount),
+                    "currency": "USD",
+                    "quantity": 1
+                }]
+            },
+            "amount": {
+                "total": str(donation.amount),
+                "currency": "USD"
+            },
+            "description": f"Donation to {donation.campaign.title}"
+        }]
+    })
+    
+    if payment.create():
+        donation.payment_reference = payment.id
+        db.session.add(donation)
+        db.session.commit()
+        
+        for link in payment.links:
+            if link.rel == "approval_url":
+                return redirect(link.href)
+    else:
+        flash('PayPal payment processing error. Please try again.')
+        return redirect(url_for('campaign_detail', id=donation.campaign_id))
+
+@app.route('/paypal-payment-success/<int:donation_id>')
+@login_required
+def paypal_payment_success(donation_id):
+    donation = Donation.query.get_or_404(donation_id)
+    payment_id = request.args.get('paymentId')
+    payer_id = request.args.get('PayerID')
+    
+    payment = paypalrestsdk.Payment.find(payment_id)
+    
+    if payment.execute({"payer_id": payer_id}):
+        donation.status = 'confirmed'
+        campaign = donation.campaign
+        campaign.current_amount += donation.amount
+        db.session.commit()
+        flash('Thank you for your PayPal donation!')
+        return render_template('donations/success.html', donation=donation)
+    else:
+        flash('PayPal payment execution failed.')
+        return redirect(url_for('campaign_detail', id=donation.campaign_id))
+
+@app.route('/paypal-payment-cancel/<int:donation_id>')
+@login_required
+def paypal_payment_cancel(donation_id):
+    donation = Donation.query.get_or_404(donation_id)
+    db.session.delete(donation)
+    db.session.commit()
+    flash('PayPal payment was cancelled.')
     return redirect(url_for('campaign_detail', id=donation.campaign_id))
 
 # User profile
@@ -305,6 +394,8 @@ def admin_new_payment_method():
                 'routing_number': form.routing_number.data,
                 'account_holder': form.account_holder.data
             })
+        elif form.method_type.data == 'paypal':
+            details['paypal_email'] = form.paypal_email.data
         
         payment_method = PaymentMethod(
             method_type=form.method_type.data,

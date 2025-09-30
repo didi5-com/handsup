@@ -19,7 +19,8 @@ class RegistrationForm(FlaskForm):
 class DonationForm(FlaskForm):
     amount = FloatField('Donation Amount', validators=[DataRequired(), NumberRange(min=1)])
     payment_method = SelectField('Payment Method', 
-                               choices=[('card', 'Credit/Debit Card'), 
+                               choices=[('card', 'Credit/Debit Card'),
+                                       ('paypal', 'PayPal'),
                                        ('crypto', 'Cryptocurrency'), 
                                        ('bank', 'Bank Transfer')])
     anonymous = BooleanField('Donate Anonymously')
@@ -47,7 +48,7 @@ class NewsForm(FlaskForm):
 
 class PaymentMethodForm(FlaskForm):
     method_type = SelectField('Payment Type', 
-                            choices=[('crypto', 'Cryptocurrency'), ('bank', 'Bank Transfer')],
+                            choices=[('paypal', 'PayPal'), ('crypto', 'Cryptocurrency'), ('bank', 'Bank Transfer')],
                             validators=[DataRequired()])
     name = StringField('Payment Method Name', validators=[DataRequired(), Length(min=2, max=100)])
     
@@ -78,10 +79,11 @@ class NewsForm(FlaskForm):
 
 class PaymentMethodForm(FlaskForm):
     method_type = SelectField('Payment Type', 
-                            choices=[('crypto', 'Cryptocurrency'), ('bank', 'Bank Transfer')])
+                            choices=[('paypal', 'PayPal'), ('crypto', 'Cryptocurrency'), ('bank', 'Bank Transfer')])
     name = StringField('Method Name', validators=[DataRequired(), Length(max=100)])
     wallet_address = StringField('Wallet Address (for crypto)')
     bank_name = StringField('Bank Name (for bank transfer)')
     account_number = StringField('Account Number')
     routing_number = StringField('Routing Number')
     account_holder = StringField('Account Holder Name')
+    paypal_email = StringField('PayPal Email (for PayPal)')
