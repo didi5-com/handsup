@@ -1,8 +1,10 @@
-// Main JavaScript for Hands Up Platform
+
+// Animation and interaction scripts
 document.addEventListener('DOMContentLoaded', function() {
     // Smooth scrolling for anchor links
-    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-        anchor.addEventListener('click', function (e) {
+    const links = document.querySelectorAll('a[href^="#"]');
+    links.forEach(link => {
+        link.addEventListener('click', function(e) {
             e.preventDefault();
             const target = document.querySelector(this.getAttribute('href'));
             if (target) {
@@ -13,16 +15,32 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
-    // Auto-dismiss alerts after 5 seconds
-    const alerts = document.querySelectorAll('.alert:not(.alert-permanent)');
-    alerts.forEach(alert => {
-        setTimeout(() => {
-            const bsAlert = new bootstrap.Alert(alert);
-            bsAlert.close();
-        }, 5000);
+    // Campaign card hover effects
+    const campaignCards = document.querySelectorAll('.campaign-card');
+    campaignCards.forEach(card => {
+        card.addEventListener('mouseenter', function() {
+            this.style.transform = 'translateY(-5px)';
+            this.style.boxShadow = '0 10px 25px rgba(0,0,0,0.15)';
+        });
+        
+        card.addEventListener('mouseleave', function() {
+            this.style.transform = 'translateY(0)';
+            this.style.boxShadow = '0 5px 15px rgba(0,0,0,0.08)';
+        });
     });
 
-    // Form validation enhancements
+    // Progress bar animations
+    const progressBars = document.querySelectorAll('.progress-bar');
+    progressBars.forEach(bar => {
+        const width = bar.style.width;
+        bar.style.width = '0%';
+        setTimeout(() => {
+            bar.style.width = width;
+            bar.style.transition = 'width 1.5s ease-in-out';
+        }, 500);
+    });
+
+    // Form validation feedback
     const forms = document.querySelectorAll('.needs-validation');
     forms.forEach(form => {
         form.addEventListener('submit', function(event) {
@@ -34,84 +52,112 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
-    // Donation amount quick select
+    // Payment method selection
+    const paymentMethodSelect = document.getElementById('payment_method');
+    if (paymentMethodSelect) {
+        paymentMethodSelect.addEventListener('change', function() {
+            const selectedMethod = this.value;
+            updatePaymentInfo(selectedMethod);
+        });
+    }
+
+    // Amount quick select buttons
     const amountButtons = document.querySelectorAll('.amount-btn');
     const amountInput = document.getElementById('amount');
-
+    
     amountButtons.forEach(button => {
         button.addEventListener('click', function() {
             const amount = this.dataset.amount;
             if (amountInput) {
                 amountInput.value = amount;
-                amountButtons.forEach(btn => btn.classList.remove('active'));
-                this.classList.add('active');
             }
+            
+            // Update active button
+            amountButtons.forEach(btn => btn.classList.remove('active'));
+            this.classList.add('active');
         });
-    });
-
-    // Payment method selection
-    const paymentMethods = document.querySelectorAll('input[name="payment_method"]');
-    const paymentDetails = document.querySelectorAll('.payment-details');
-
-    paymentMethods.forEach(method => {
-        method.addEventListener('change', function() {
-            paymentDetails.forEach(detail => detail.style.display = 'none');
-            const selectedDetail = document.getElementById(this.value + '-details');
-            if (selectedDetail) {
-                selectedDetail.style.display = 'block';
-            }
-        });
-    });
-
-    // Campaign cards animation on scroll
-    const observerOptions = {
-        threshold: 0.1,
-        rootMargin: '0px 0px -50px 0px'
-    };
-
-    const campaignObserver = new IntersectionObserver(function(entries) {
-        entries.forEach(entry => {
-            if (entry.isIntersecting) {
-                entry.target.style.opacity = '1';
-                entry.target.style.transform = 'translateY(0)';
-            }
-        });
-    }, observerOptions);
-
-    // Observe campaign cards if they exist
-    const campaignCards = document.querySelectorAll('.campaign-card');
-    campaignCards.forEach(card => {
-        card.style.opacity = '0';
-        card.style.transform = 'translateY(20px)';
-        card.style.transition = 'all 0.6s ease';
-        campaignObserver.observe(card);
     });
 });
 
-// Utility functions
-function formatCurrency(amount) {
-    return new Intl.NumberFormat('en-US', {
-        style: 'currency',
-        currency: 'USD'
-    }).format(amount);
-}
-
-function setAmount(amount) {
-    const amountInput = document.getElementById('amount');
-    if (amountInput) {
-        amountInput.value = amount;
+function updatePaymentInfo(method) {
+    const infoDiv = document.getElementById('payment-info');
+    if (!infoDiv) return;
+    
+    let infoHTML = '';
+    
+    switch(method) {
+        case 'card':
+            infoHTML = `
+                <div class="alert alert-info">
+                    <i class="fas fa-credit-card me-2"></i>
+                    Secure payment processing via Stripe. Your card information is encrypted and secure.
+                </div>
+            `;
+            break;
+        case 'paypal':
+            infoHTML = `
+                <div class="alert alert-info">
+                    <i class="fab fa-paypal me-2"></i>
+                    You'll be redirected to PayPal to complete your donation securely.
+                </div>
+            `;
+            break;
+        case 'crypto':
+            infoHTML = `
+                <div class="alert alert-warning">
+                    <i class="fab fa-bitcoin me-2"></i>
+                    After clicking donate, you'll receive wallet address and payment instructions.
+                </div>
+            `;
+            break;
+        case 'bank':
+            infoHTML = `
+                <div class="alert alert-warning">
+                    <i class="fas fa-university me-2"></i>
+                    Bank transfer details will be provided after clicking donate. Manual verification may take 1-3 business days.
+                </div>
+            `;
+            break;
     }
+    
+    infoDiv.innerHTML = infoHTML;
 }
 
-// Progress bar animation
-function animateProgressBar(element, percentage) {
-    let current = 0;
-    const increment = percentage / 50;
-    const timer = setInterval(() => {
-        current += increment;
-        element.style.width = current + '%';
-        if (current >= percentage) {
-            clearInterval(timer);
-        }
-    }, 20);
+// Copy to clipboard function
+function copyToClipboard(text) {
+    navigator.clipboard.writeText(text).then(function() {
+        showNotification('Copied to clipboard!', 'success');
+    }).catch(function() {
+        // Fallback for older browsers
+        const textArea = document.createElement('textarea');
+        textArea.value = text;
+        document.body.appendChild(textArea);
+        textArea.select();
+        document.execCommand('copy');
+        document.body.removeChild(textArea);
+        showNotification('Copied to clipboard!', 'success');
+    });
+}
+
+// Show notification
+function showNotification(message, type = 'info') {
+    const notification = document.createElement('div');
+    notification.className = `alert alert-${type} alert-dismissible fade show notification`;
+    notification.style.cssText = `
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        z-index: 9999;
+        min-width: 300px;
+    `;
+    notification.innerHTML = `
+        ${message}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    `;
+    
+    document.body.appendChild(notification);
+    
+    setTimeout(() => {
+        notification.remove();
+    }, 5000);
 }

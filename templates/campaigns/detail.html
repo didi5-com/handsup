@@ -34,7 +34,7 @@
                         </div>
                         <div class="col-md-4">
                             {% if campaign.end_date %}
-                                {% set today = moment.utcnow().date() %}
+                                {% set today = moment().date() %}
                                 {% set days_left = (campaign.end_date - today).days %}
                                 {% if days_left > 0 %}
                                     <h5 class="text-info">{{ days_left }}</h5>

@@ -30,7 +30,7 @@ paypalrestsdk.configure({
 # Add moment function to template context
 @app.template_global()
 def moment():
-    return datetime
+    return datetime.now()
 
 @login_manager.user_loader
 def load_user(user_id):
@@ -116,14 +116,14 @@ def donate(campaign_id):
             user_id=current_user.id,
             campaign_id=campaign_id
         )
+        db.session.add(donation)
+        db.session.commit()
         
         if form.payment_method.data == 'card':
             return redirect(url_for('process_stripe_payment', donation_id=donation.id))
         elif form.payment_method.data == 'paypal':
             return redirect(url_for('process_paypal_payment', donation_id=donation.id))
         else:
-            db.session.add(donation)
-            db.session.commit()
             return render_template('donations/manual_payment.html', donation=donation, payment_methods=payment_methods)
     
     return render_template('donations/donate.html', form=form, campaign=campaign, payment_methods=payment_methods)
