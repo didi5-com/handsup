@@ -7,6 +7,7 @@ from config import Config
 import stripe
 import paypalrestsdk
 from datetime import datetime
+from sqlalchemy import true
 
 # Initialize Flask app
 app = Flask(__name__)
@@ -49,9 +50,10 @@ def load_user(user_id):
 # Home page
 @app.route('/')
 def index():
-    campaigns = Campaign.query.filter(Campaign.is_active.is_(True)).limit(6).all()
+    campaigns = Campaign.query.filter(Campaign.is_active == true()).limit(6).all()
     news = News.query.filter_by(is_published=True).order_by(News.published_date.desc()).limit(3).all()
     return render_template('index.html', campaigns=campaigns, news=news)
+
 
 # Authentication routes
 @app.route('/login', methods=['GET', 'POST'])
@@ -98,11 +100,12 @@ def logout():
 def campaigns():
     page = request.args.get('page', 1, type=int)
     category = request.args.get('category')
-    query = Campaign.query.filter(Campaign.is_active.is_(True))
+    query = Campaign.query.filter(Campaign.is_active == true())
     if category:
         query = query.filter_by(category=category)
     campaigns = query.paginate(page=page, per_page=9, error_out=False)
     return render_template('campaigns/index.html', campaigns=campaigns, current_category=category)
+
 
 @app.route('/campaign/<int:id>')
 def campaign_detail(id):
@@ -454,4 +457,5 @@ def admin_new_payment_method():
 if __name__ == '__main__':
     with app.app_context():
         create_tables()
-    app.run(host='0.0.0.0', port=5000, debug=True)
+    port = int(os.environ.get("PORT", 5000))
+    app.run(host='0.0.0.0', port=port)
