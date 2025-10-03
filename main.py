@@ -49,7 +49,7 @@ def load_user(user_id):
 # Home page
 @app.route('/')
 def index():
-    campaigns = Campaign.query.filter_by(is_active=True).limit(6).all()
+    campaigns = Campaign.query.filter(Campaign.is_active.is_(True)).limit(6).all()
     news = News.query.filter_by(is_published=True).order_by(News.published_date.desc()).limit(3).all()
     return render_template('index.html', campaigns=campaigns, news=news)
 
@@ -98,7 +98,7 @@ def logout():
 def campaigns():
     page = request.args.get('page', 1, type=int)
     category = request.args.get('category')
-    query = Campaign.query.filter_by(is_active=True)
+    query = Campaign.query.filter(Campaign.is_active.is_(True))
     if category:
         query = query.filter_by(category=category)
     campaigns = query.paginate(page=page, per_page=9, error_out=False)
